@@ -1,0 +1,38 @@
+name: Build and Release JAR
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: Build with Gradle
+        run: ./gradlew clean build
+
+      - name: Create Release Draft
+        id: create_release_draft
+        uses: release-drafter/release-drafter@v5.21.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+        with:
+          config-name: release-drafter.yml
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release_draft.outputs.upload_url }}
+          asset_path: bin/EnderVaults-Bukkit-v1.1.0.jar
+          asset_name: EnderVaults.jar
+          asset_content_type: application/java-archive
