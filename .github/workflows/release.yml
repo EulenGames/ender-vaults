@@ -1,0 +1,19 @@
+name: Build and Release JAR
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create Release Draft
+        id: create_release_draft
+        uses: release-drafter/release-drafter@v5.21.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
+        with:
+          config-name: release-drafter.yml
